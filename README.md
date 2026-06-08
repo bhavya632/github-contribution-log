@@ -2,8 +2,11 @@
 # Contribution [#]: [Issue Title]
 
 **Contribution Number:** 1
+
 **Student:** Bhavya Agarwal
-**Issue:** [GitHub issue link]  
+
+**Issue:** [GitHub issue link] 
+
 **Status:** Phase I - In Progress
 
 ---
