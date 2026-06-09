@@ -5,7 +5,7 @@
 
 **Student:** Bhavya Agarwal
 
-**Issue:** [GitHub issue link] 
+**Issue:** https://github.com/apache/gravitino/issues/10169
 
 **Status:** Phase I - In Progress
 
@@ -13,7 +13,7 @@
 
 ## Why I Chose This Issue
 
-[1-2 paragraphs explaining why this issue interests you, how it matches your skills/learning goals, what you hope to learn]
+The description is really good. The maintainer literally tells you what to do. There is only one comment, no open PR's, no assignee and matches my skill and known languages. 
 
 ---
 
