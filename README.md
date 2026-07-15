@@ -182,3 +182,190 @@ Using UMPIRE framework (adapted):
 - [Link to helpful documentation]
 - [Tutorial or Stack Overflow post that helped]
 - [GitHub issues or discussions that helped]
+
+---
+---
+
+# Contribution 2: Clarify namesrv.toml vs namesrv-example.toml and fix placeholder config value
+
+**Contribution Number:** 2
+
+**Student:** Bhavya Agarwal
+
+**Issue:** https://github.com/mxsm/rocketmq-rust/issues/7622
+
+**Status:** Phase I - In Progress (awaiting maintainer response on scope)
+
+---
+
+## Why I Chose This Issue
+
+Labeled "good first issue" / "Difficulty level/Easy", scoped to documentation, and the maintainer (`mxsm`) had already left concrete guidance in a comment (units/defaults/expected ranges, a small-dev vs. production baseline pair, and a possible config-parser fixture test). The maintainer had tagged another user (`@hiSandog`) two weeks prior with no visible follow-up, so I commented on the issue first to check it was still open before starting, and proposed a plan matching the maintainer's comment. I also flagged upfront that I don't speak Chinese, so `README-zh_cn.md` would need to stay a follow-up rather than something I fake through translation — waiting on the maintainer's reply before writing any code.
+
+---
+
+## Understanding the Issue
+
+### Problem Description
+
+`rocketmq-namesrv` ships two config files: `resource/namesrv.toml` and `resource/namesrv-example.toml`. The README's Quick Start section tells users to start the server with `-c rocketmq-namesrv/resource/namesrv-example.toml` (the fully annotated file), but doesn't explain what `namesrv.toml` is for. As it stands, `namesrv.toml` contains nothing but:
+
+```toml
+rocketmqHome=11111
+```
+
+A numeric value assigned to a path-typed field, with no other keys, no comments, and no indication it's a placeholder rather than a working config. A first-time user who opens `namesrv.toml` expecting a usable example (reasonable, given `namesrv-example.toml` sits right next to it and *is* fully documented) gets nothing useful and no signal that they're looking at the wrong file.
+
+### Expected Behavior
+
+- The README (both English and, eventually, Chinese) should state plainly why two files exist and which one to use for what purpose.
+- `resource/namesrv.toml` should either contain a real, documented minimal example (per the maintainer's "small dev / production baseline" suggestion) or be unambiguously marked as a non-functional placeholder — not silently ship a garbage value that looks like an oversight.
+- Quick Start commands should be double-checked to confirm they reference the file that's actually meant to be run.
+
+### Current Behavior
+
+- `rocketmq-namesrv/README.md`'s Quick Start section already points at `namesrv-example.toml` for the "start from a config file" case, and the Configuration section's key table also links to `namesrv-example.toml` — so the *commands* are pointed correctly today. The gap is that nothing explains what `namesrv.toml` is, so it reads as an inconsistency rather than an intentional placeholder.
+- `resource/namesrv.toml` is exactly one line (`rocketmqHome=11111`) plus the license header — not a valid directory path, not documented, not aligned with any of the "small dev" or "production baseline" framing the maintainer asked for.
+- `resource/namesrv-example.toml` is well documented (comments with defaults, units where relevant, and env var alternatives for `rocketmqHome`) but is a single "documents every key" file, not a curated dev/prod pair.
+- `README-zh_cn.md` mirrors the English structure closely today, so whatever wording is added to the English README needs a Chinese equivalent to stay aligned — the piece I can't do myself.
+
+### Affected Components
+
+- `rocketmq-namesrv/README.md` — Quick Start / Configuration sections (needs the two-file explanation).
+- `rocketmq-namesrv/README-zh_cn.md` — same sections, Chinese (blocked on translation help).
+- `rocketmq-namesrv/resource/namesrv.toml` — the placeholder file itself.
+- `rocketmq-namesrv/resource/namesrv-example.toml` — possibly split or supplemented with a "production baseline" variant per the maintainer's comment.
+- Config parsing (`NamesrvConfig`, referenced from `src/bin/namesrv_bootstrap_server.rs`) — only in scope if the maintainer wants the "docs test / parser fixture" idea included in this PR rather than deferred.
+
+---
+
+## Reproduction Process
+
+### Environment Setup
+
+[Notes on setting up your local development environment - challenges you faced, how you solved them]
+
+### Steps to Reproduce
+
+1. Open `rocketmq-namesrv/resource/namesrv.toml` expecting a runnable minimal config, per the README's framing of it alongside `namesrv-example.toml`.
+2. Observe it contains only `rocketmqHome=11111` — not a valid path, not documented, no indication it's intentional.
+3. Compare against `namesrv-example.toml`, which is fully annotated, and note the README doesn't explain the difference.
+
+### Reproduction Evidence
+
+- **Commit showing reproduction:** [Link to commit in your fork]
+- **Screenshots/logs:** [If applicable]
+- **My findings:** [What you discovered during reproduction]
+
+---
+
+## Solution Approach
+
+### Analysis
+
+This is pending maintainer confirmation on scope (see open questions in my issue comment). The likely shape of the fix, based on `mxsm`'s guidance:
+1. `namesrv.toml` becomes either a small, documented "dev baseline" (minimal keys, real defaults, units/ranges noted) or is explicitly labeled a placeholder/template in both its own comments and the README.
+2. `namesrv-example.toml` stays (or becomes) the fully annotated reference, potentially supplemented with a "production baseline" variant.
+3. Both READMEs gain a short paragraph explaining the two-files convention, kept aligned English/Chinese.
+4. A config-parser fixture/docs test (asserting the documented keys match `NamesrvConfig`'s actual fields) may or may not land in this same PR — open question to the maintainer.
+
+### Proposed Solution
+
+[To be finalized once the maintainer responds — will not start implementation until the Chinese-README scope and fixture-test scope questions are answered, to avoid rework.]
+
+### Implementation Plan
+
+Using UMPIRE framework (adapted):
+
+**Understand:** Two namesrv config files exist for different purposes, but only one is documented, and the placeholder (`namesrv.toml`) is indistinguishable from a broken example. Fix is scoped to docs + one config file, with an open question on whether Chinese docs and a parser fixture test are in scope for this PR.
+
+**Match:** No existing "two-tier config example" pattern elsewhere in the workspace to copy from directly; `namesrv-example.toml`'s existing comment style (default value + short purpose line, occasionally an env var alternative) is the style to extend to any new/edited file.
+
+**Plan:**
+1. Get scope confirmation from `mxsm` on the Chinese README and parser-fixture questions.
+2. Update `rocketmq-namesrv/README.md`'s Quick Start/Configuration sections to explain the `namesrv.toml` vs. `namesrv-example.toml` distinction.
+3. Replace the `rocketmqHome=11111` placeholder in `resource/namesrv.toml` with either a documented minimal dev config or an explicit "this is a placeholder, see namesrv-example.toml" comment block.
+4. Re-verify every Quick Start command still targets the intended file after the change.
+5. Mirror the README wording change into `README-zh_cn.md` (myself if scope allows using careful, verified translation tooling and a native-speaker review request, or hand off, per maintainer's answer).
+6. If in scope: add a docs test / parser fixture asserting the keys documented in `namesrv-example.toml` match `NamesrvConfig`'s actual serde field names.
+
+**Implement:** [Link to your branch/commits as you work]
+
+**Review:** Before opening the PR, confirm: English and Chinese READMEs (if both included) say the same thing, `namesrv.toml` no longer looks like an unintentional bug, Quick Start commands were actually re-run against the edited files, and any added fixture test fails if the docs and parser drift apart.
+
+**Evaluate:** Manually run the Quick Start commands from the README against both config files post-edit; if a fixture test is added, confirm it fails when a key is deliberately renamed in one file but not the other.
+
+---
+
+## Testing Strategy
+
+### Unit Tests
+
+- [ ] Test case 1: [Description]
+- [ ] Test case 2: [Description]
+- [ ] Test case 3: [Description]
+
+### Integration Tests
+
+- [ ] Integration scenario 1
+- [ ] Integration scenario 2
+
+### Manual Testing
+
+[What you tested manually and results]
+
+---
+
+## Implementation Notes
+
+### Week [X] Progress
+
+[What you built this week, challenges faced, decisions made]
+
+### Week [Y] Progress
+
+[Continue documenting as you work]
+
+### Code Changes
+
+- **Files modified:** [List]
+- **Key commits:** [Links to important commits]
+- **Approach decisions:** [Why you chose certain approaches]
+
+---
+
+## Pull Request
+
+**PR Link:** [GitHub PR URL when submitted]
+
+**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+
+**Maintainer Feedback:**
+- 2026-07-15 (approx.): Posted a comment on the issue confirming it's unassigned and proposing a plan aligned with `mxsm`'s guidance; asked whether an English-only PR (Chinese README as follow-up) is acceptable, and whether the config-parser fixture belongs in this PR or a later one.
+- [Date]: [Maintainer's response, once received]
+
+**Status:** Awaiting maintainer response
+
+---
+
+## Learnings & Reflections
+
+### Technical Skills Gained
+
+[What you learned technically]
+
+### Challenges Overcome
+
+[What was hard and how you solved it]
+
+### What I'd Do Differently Next Time
+
+[Reflection on your process]
+
+---
+
+## Resources Used
+
+- Issue thread: https://github.com/mxsm/rocketmq-rust/issues/7622
+- `rocketmq-namesrv/README.md` and `README-zh_cn.md` (current Quick Start / Configuration sections)
+- `rocketmq-namesrv/resource/namesrv.toml` and `resource/namesrv-example.toml`
