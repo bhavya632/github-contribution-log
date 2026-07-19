@@ -243,7 +243,7 @@ A numeric value assigned to a path-typed field, with no other keys, no comments,
 
 ### Environment Setup
 
-[Notes on setting up your local development environment - challenges you faced, how you solved them]
+- Forked the public repository. Cloned it to local device and began implementation. No challenges.
 
 ### Steps to Reproduce
 
