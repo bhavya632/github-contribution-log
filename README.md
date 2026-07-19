@@ -328,9 +328,20 @@ Together these three fixture tests (existing example-file test + 2 new ones) are
 
 ## Implementation Notes
 
-### Week [X] Progress
+### Week 5 Progress
 
-[What you built this week, challenges faced, decisions made]
+1. Worked on finding a new issue to work on.
+2. Shortlisted 6 issues that seemed easy and interesting to work on.
+
+### Week 6 Progress
+
+1. went through each shortlisted issue in detail to choose 3 to comment on.
+2. Decided on one top issue and started working on it after commenting on the issue to be assigned to me. Got a reply from the maintainer.
+
+### Week 7 Progress
+
+1. Worked on this issue and completed my PR which is currently under review. 
+2. Also completed updating my github-contribution-log readme.
 
 ### Week [Y] Progress
 
