@@ -7,7 +7,7 @@
 
 **Issue:** https://github.com/apache/gravitino/issues/10169
 
-**Status:** Phase I - In Progress
+**Status:** Phase III - In Progress
 
 ---
 
@@ -194,7 +194,7 @@ Using UMPIRE framework (adapted):
 
 **Issue:** https://github.com/mxsm/rocketmq-rust/issues/7622
 
-**Status:** Phase I - In Progress (awaiting maintainer response on scope)
+**Status:** Phase IV - PR opened, awaiting maintainer review (PR #8396)
 
 ---
 
@@ -253,9 +253,7 @@ A numeric value assigned to a path-typed field, with no other keys, no comments,
 
 ### Reproduction Evidence
 
-- **Commit showing reproduction:** [Link to commit in your fork]
-- **Screenshots/logs:** [If applicable]
-- **My findings:** [What you discovered during reproduction]
+No reproduction commit/screenshots needed — this was a documentation and example-config issue (a broken placeholder file and a missing README explanation), not a code bug with runtime behavior to capture. The "steps to reproduce" above (opening `namesrv.toml` and comparing it to `namesrv-example.toml`) are directly observable by reading the files in the repo, and are what verifying the fix requires.
 
 ---
 
@@ -271,7 +269,14 @@ This is pending maintainer confirmation on scope (see open questions in my issue
 
 ### Proposed Solution
 
-[To be finalized once the maintainer responds — will not start implementation until the Chinese-README scope and fixture-test scope questions are answered, to avoid rework.]
+Maintainer (`mxsm`) responded on the issue: *"Don't worry about the Chinese text for now. Just submit the PR."* — this confirms an English-only PR is acceptable, with the Chinese README sync deferred as a follow-up. The fixture-test question wasn't addressed explicitly, but I found `rocketmq-namesrv/src/namesrv_config_parse.rs` already has a `namesrv_config_parse_loads_example_file` test that parses `namesrv-example.toml` through `NamesrvConfig` — so extending that same pattern to cover the new/edited files (rather than adding a separate standalone fixture test) satisfies the spirit of the ask with minimal new surface area.
+
+Final shape of the change:
+1. `resource/namesrv.toml` becomes a small, documented "dev baseline" — a handful of commonly-changed keys (paths under `/tmp` for a self-contained local run) with comments, rather than the `rocketmqHome=11111` placeholder.
+2. New `resource/namesrv-production.toml` — a "production baseline" with thread-pool/queue sizes tuned above the built-in defaults, each documented with its default value and a suggested range, per the maintainer's original ask.
+3. `namesrv-example.toml` stays as-is: the exhaustive, fully-annotated reference of every key (already well documented, per Analysis above).
+4. `README.md`'s Quick Start and Configuration sections gain a short explanation of what each of the three files is for, and the Quick Start commands are re-verified against the edited files.
+5. `namesrv_config_parse.rs` gains tests parsing the new dev/production files through `NamesrvConfig`, so drift between the docs and the parser fails a test instead of silently landing.
 
 ### Implementation Plan
 
@@ -301,18 +306,23 @@ Using UMPIRE framework (adapted):
 
 ### Unit Tests
 
-- [ ] Test case 1: [Description]
-- [ ] Test case 2: [Description]
-- [ ] Test case 3: [Description]
+All added in `rocketmq-namesrv/src/namesrv_config_parse.rs`, extending the module's existing `#[cfg(test)]` block (which already had a fixture test for `namesrv-example.toml`) rather than introducing a new test file:
+
+- [x] `namesrv_config_parse_loads_dev_baseline_file` — loads `resource/namesrv.toml` (the rewritten dev baseline) through `parse_command_and_config_file` and asserts `rocketmq_home`, `kv_config_path`, and `config_store_path` come back as the `/tmp/rocketmq` values set in the file, i.e. the file actually parses and isn't silently falling back to defaults.
+- [x] `namesrv_config_parse_loads_production_baseline_file` — loads the new `resource/namesrv-production.toml` and asserts `rocketmq_home` plus every thread-pool/queue-capacity value (`client_request_thread_pool_nums`, `default_thread_pool_nums`, `client_request_thread_pool_queue_capacity`, `default_thread_pool_queue_capacity`, `unregister_broker_queue_capacity`) and `use_route_info_manager_v2` match what the file declares — the whole point of the "production baseline" is those tuned numbers, so the test pins them.
+- [x] Pre-existing, unchanged: `namesrv_config_parse_reads_selected_toml_fields`, `namesrv_config_parse_loads_example_file`, `namesrv_config_parse_falls_back_to_default_for_missing_file` — all still pass, confirming the edits didn't regress the example file or the default-fallback path.
+
+Together these three fixture tests (existing example-file test + 2 new ones) are the "config parser fixture" the maintainer asked for in the issue thread: if a key gets renamed in `NamesrvConfig` (or a typo lands in one of the `.toml` files) without the other side being updated, one of these tests fails instead of the drift going unnoticed.
 
 ### Integration Tests
 
-- [ ] Integration scenario 1
-- [ ] Integration scenario 2
+- [x] Ran the actual `rocketmq-namesrv-rust` binary against all three config files (`namesrv.toml`, `namesrv-example.toml`, `namesrv-production.toml`) using `-c <file> -p` (print merged config and exit), confirming the Quick Start commands documented in the README work end-to-end against the real CLI, not just the parser in isolation.
 
 ### Manual Testing
 
-[What you tested manually and results]
+- `cargo fmt -p rocketmq-namesrv` — no changes needed.
+- `cargo clippy -p rocketmq-namesrv --all-targets --all-features -- -D warnings` — clean.
+- `cargo test -p rocketmq-namesrv --lib namesrv_config_parse` — 5/5 passed (the 3 pre-existing + 2 new tests above).
 
 ---
 
@@ -328,23 +338,31 @@ Using UMPIRE framework (adapted):
 
 ### Code Changes
 
-- **Files modified:** [List]
-- **Key commits:** [Links to important commits]
-- **Approach decisions:** [Why you chose certain approaches]
+- **Files modified:**
+  - `rocketmq-namesrv/resource/namesrv.toml` (rewrote placeholder into a documented dev baseline)
+  - `rocketmq-namesrv/resource/namesrv-production.toml` (new)
+  - `rocketmq-namesrv/README.md` (Quick Start + Configuration sections)
+  - `rocketmq-namesrv/src/namesrv_config_parse.rs` (two new fixture tests)
+- **Key commits:** `dbb8e1a6` / `0d72ec69` (author identity amended) on branch `fix-7622-namesrv-toml-docs`, single commit `[ISSUE #7622]📝Clarify namesrv.toml vs namesrv-example.toml and add production baseline`
+- **Approach decisions:**
+  - Kept `namesrv-example.toml` untouched — it already serves as the "documents every key" reference; only the broken/undocumented `namesrv.toml` needed fixing, plus a new production-tier file.
+  - Included the config-parser fixture tests even though the maintainer's "just submit the PR" reply didn't explicitly confirm that part of scope, because it was directly requested in the maintainer's original comment and reused an existing test pattern already in `namesrv_config_parse.rs` (low cost, high alignment with what was asked).
+  - Had no local Rust toolchain on this machine at the start of this session — installed `rustup` (auto-synced to the `nightly` channel pinned by `rust-toolchain.toml`) and Homebrew's `protobuf` (needed by a transitive build script for `rocketmq-controller`) before validation could run.
 
 ---
 
 ## Pull Request
 
-**PR Link:** [GitHub PR URL when submitted]
+**PR Link:** https://github.com/mxsm/rocketmq-rust/pull/8396
 
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+**PR Description:** Used "Addresses #7622" rather than "Closes #7622" in the PR body, intentionally, so the issue isn't auto-closed by GitHub until the maintainer has actually reviewed and merged.
 
 **Maintainer Feedback:**
 - 2026-07-15 (approx.): Posted a comment on the issue confirming it's unassigned and proposing a plan aligned with `mxsm`'s guidance; asked whether an English-only PR (Chinese README as follow-up) is acceptable, and whether the config-parser fixture belongs in this PR or a later one.
-- [Date]: [Maintainer's response, once received]
+- 2026-07-19: `mxsm` replied: "Don't worry about the Chinese text for now. Just submit the PR." — scope unblocked, Chinese README deferred, proceeding with English-only PR.
+- 2026-07-19: Opened PR #8396 with the dev/production baseline configs, README updates, and extended parser fixture tests.
 
-**Status:** Awaiting maintainer response
+**Status:** Awaiting maintainer review
 
 ---
 
