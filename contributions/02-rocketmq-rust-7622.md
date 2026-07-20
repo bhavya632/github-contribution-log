@@ -6,7 +6,7 @@
 
 **Issue:** https://github.com/mxsm/rocketmq-rust/issues/7622
 
-**Status:** Phase IV - PR opened, awaiting maintainer review (PR #8396)
+**Status:** Completed - PR merged
 
 ---
 
@@ -193,15 +193,18 @@ Together these three fixture tests (existing example-file test + 2 new ones) are
 
 ### Technical Skills Gained
 
-[What you learned technically]
+- Documentation is an essential part of any project and should be detailed, accurate and up-to-date.
 
 ### Challenges Overcome
 
-[What was hard and how you solved it]
+- I had some trouble understanding the project itself and why I was doing what I was.
+- I have never worked on a project this big and had a big learning curve.
+- I didn't know half of the terms mentioned and had to go through everything and understand the basics as well before I started worked on the asked documentation.
 
 ### What I'd Do Differently Next Time
 
-[Reflection on your process]
+- Not be hasty and spend more time on understanding the problem and the project.
+- Not blindly trust AI and actually go through all the changes before committing.
 
 ---
 
