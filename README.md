@@ -8,6 +8,7 @@ Overview of open-source contributions. Each row links to a detailed log for that
 | - | ----- | ---- | ----- | ------ | -- |
 | 1 | [Fix async drop-event log throttling race in AsyncQueueListener](contributions/01-gravitino-10169.md) | [apache/gravitino](https://github.com/apache/gravitino) | [#10169](https://github.com/apache/gravitino/issues/10169) | Phase III - In Progress | — |
 | 2 | [Clarify namesrv.toml vs namesrv-example.toml and fix placeholder config value](contributions/02-rocketmq-rust-7622.md) | [mxsm/rocketmq-rust](https://github.com/mxsm/rocketmq-rust) | [#7622](https://github.com/mxsm/rocketmq-rust/issues/7622) | PR opened, awaiting maintainer review | [#8396](https://github.com/mxsm/rocketmq-rust/pull/8396) |
+| 3 | [Sort model list by tags via URL parameter](contributions/03-manyfold-4962.md) | [manyfold3d/manyfold](https://github.com/manyfold3d/manyfold) | [#4962](https://github.com/manyfold3d/manyfold/issues/4962) | Claimed, awaiting maintainer clarification | — |
 
 ## Adding a new contribution
 
