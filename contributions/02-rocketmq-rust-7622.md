@@ -6,7 +6,7 @@
 
 **Issue:** https://github.com/mxsm/rocketmq-rust/issues/7622
 
-**Status:** Completed - PR merged
+**Status:** Merged
 
 ---
 
@@ -184,8 +184,9 @@ Together these three fixture tests (existing example-file test + 2 new ones) are
 - 2026-07-15 (approx.): Posted a comment on the issue confirming it's unassigned and proposing a plan aligned with `mxsm`'s guidance; asked whether an English-only PR (Chinese README as follow-up) is acceptable, and whether the config-parser fixture belongs in this PR or a later one.
 - 2026-07-19: `mxsm` replied: "Don't worry about the Chinese text for now. Just submit the PR." — scope unblocked, Chinese README deferred, proceeding with English-only PR.
 - 2026-07-19: Opened PR #8396 with the dev/production baseline configs, README updates, and extended parser fixture tests.
+- 2026-07-19: PR #8396 merged.
 
-**Status:** Awaiting maintainer review
+**Status:** Merged
 
 ---
 
