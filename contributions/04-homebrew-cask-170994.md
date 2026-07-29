@@ -6,7 +6,7 @@
 
 **Issue:** https://github.com/Homebrew/homebrew-cask/issues/170994 (scapple line item)
 
-**Status:** PR opened, awaiting maintainer review
+**Status:** Merged
 
 ---
 
@@ -64,7 +64,9 @@ Added a single line, `auto_updates true`, to `Casks/s/scapple.rb` (matching the 
 **Maintainer Feedback:**
 - 2026-07-26: Auto-closed by the `github-actions[bot]` "Check pull requests" workflow for an "incomplete or outdated pull request template". Root cause: the bot's `check_template.rb` requires the template's checkbox lines to match **verbatim** — I had substituted the `<cask>` placeholder with `scapple` and appended my own explanation onto the AI-disclosure checkbox line, which dropped the verbatim-match rate below its 75% threshold. Fixed by re-editing the PR body to keep every template line untouched (including the literal `<cask>` placeholder) and adding my actual verification notes as separate text alongside/below each item instead of editing the checklist lines themselves. The bot's `check-prs.yml` workflow then auto-reopened the PR on the next `edited` event.
 
-**Status:** Open, awaiting maintainer review.
+- 2026-07-27: PR #277363 merged.
+
+**Status:** Merged.
 
 ---
 
